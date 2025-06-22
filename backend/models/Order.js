@@ -70,6 +70,7 @@ const orderSchema = new mongoose.Schema({
     type: String,
     enum: [
       'Ready for Assembly',
+      'Pending',
       'In Packing',
       'Ready for Delivery',
       'Delivery in-progress',
@@ -79,6 +80,10 @@ const orderSchema = new mongoose.Schema({
     ],
     default: 'Ready for Assembly'
   },
+  declineReason: {
+  type: String,
+  default: ''
+},
 
   // ✅ DELIVERY PROOF
   deliveryProofImage: {

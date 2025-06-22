@@ -4,12 +4,13 @@
   margin: auto;
 }
 
-.employee-info, .employee-order-card {
+.employee-info,
+.employee-order-card {
   background-color: #f9f9f9;
   border-radius: 12px;
   padding: 16px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .item-table {
@@ -18,7 +19,8 @@
   border-collapse: collapse;
 }
 
-.item-table th, .item-table td {
+.item-table th,
+.item-table td {
   padding: 8px;
   border: 1px solid #ccc;
   text-align: left;
@@ -28,7 +30,9 @@
   margin-top: 16px;
 }
 
-.complete-btn, .decline-btn, .logout-btn {
+.complete-btn,
+.decline-btn,
+.logout-btn {
   padding: 10px 16px;
   border: none;
   border-radius: 6px;
@@ -50,4 +54,18 @@
   background-color: #343a40;
   color: white;
   margin-top: 30px;
+}
+
+/* ✅ Decline Reason Textarea */
+.decline-reason-input {
+  width: 100%;
+  margin-bottom: 8px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  resize: vertical;
+  font-size: 14px;
+  font-family: inherit;
+  background-color: #fff;
+  box-sizing: border-box;
 }

@@ -7,7 +7,7 @@ export const useEmployeePannelViewModel = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // ✅ Fetch employee profile and orders
+  // ✅ Fetch employee profile and assigned orders
   const fetchEmployeeData = useCallback(async () => {
     try {
       const empId = localStorage.getItem('employeeId');
@@ -32,7 +32,7 @@ export const useEmployeePannelViewModel = () => {
     }
   }, []);
 
-  // ✅ Update item status in an order
+  // ✅ Update item status
   const updateItemStatus = async (orderId, itemIndex, newStatus) => {
     try {
       const res = await axios.put(`http://localhost:5000/api/employee/update-item-status`, {
@@ -50,7 +50,7 @@ export const useEmployeePannelViewModel = () => {
     }
   };
 
-  // ✅ Complete order and refresh profile
+  // ✅ Complete order
   const completeOrder = async (orderId) => {
     try {
       const res = await axios.post(`http://localhost:5000/api/employee/complete-order`, { orderId });
@@ -60,23 +60,28 @@ export const useEmployeePannelViewModel = () => {
         prev.map(order => (order._id === updatedOrder._id ? updatedOrder : order))
       );
 
-      await fetchEmployeeData(); // ✅ Refresh activeOrders count
+      await fetchEmployeeData(); // Refresh activeOrders count
     } catch (err) {
       console.error('❌ Error completing order:', err.response?.data || err.message);
     }
   };
 
-  // ✅ Decline order and refresh profile
-  const declineOrder = async (orderId) => {
+  // ✅ Decline order with reason
+  const declineOrder = async (orderId, reason = '') => {
     try {
-      const res = await axios.post(`http://localhost:5000/api/employee/decline-order`, { orderId });
-      const updatedOrder = res.data.updatedOrder;
+      const res = await axios.post('http://localhost:5000/api/employee/decline-order', {
+        orderId,
+        reason
+      });
+
+      const updatedOrder = res.data.order || res.data.updatedOrder;
+      console.log('⚠️ Order declined:', updatedOrder);
 
       setOrders(prev =>
         prev.map(order => (order._id === updatedOrder._id ? updatedOrder : order))
       );
 
-      await fetchEmployeeData(); // ✅ Refresh activeOrders count
+      await fetchEmployeeData(); // ✅ refresh view
     } catch (err) {
       console.error('❌ Error declining order:', err.response?.data || err.message);
     }

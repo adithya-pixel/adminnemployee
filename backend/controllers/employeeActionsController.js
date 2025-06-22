@@ -1,5 +1,7 @@
 const Employee = require('../models/Employee');
 const Order = require('../models/Order');
+const EmployeeOrderHistory = require('../models/EmployeeOrderHistory');
+
 
 // ✅ Get employee profile
 const getEmployeeProfile = async (req, res) => {
@@ -59,25 +61,21 @@ const updateItemStatus = async (req, res) => {
 };
 const completeOrder = async (req, res) => {
   const { orderId } = req.body;
+
   try {
     const order = await Order.findById(orderId);
     if (!order) return res.status(404).json({ error: 'Order not found' });
-
-    if (order.employeeStatus === 'Completed') {
-      return res.status(400).json({ error: 'Order already completed' });
-    }
 
     const allPacked = order.items.every(item => item.status === 'Packed');
     if (!allPacked) {
       return res.status(400).json({ error: 'Not all items are packed' });
     }
 
-    // ✅ Update order first
     order.employeeStatus = 'Completed';
-    order.orderStatus = 'Ready for Delivery'; // you can set whatever next status
+    order.orderStatus = 'Ready for Delivery';
     await order.save();
 
-    // ✅ 🔥 Recalculate activeOrders for employee
+    // 🔄 Update employee activeOrders
     if (order.assignedEmployee) {
       const activeCount = await Order.countDocuments({
         assignedEmployee: order.assignedEmployee,
@@ -87,9 +85,14 @@ const completeOrder = async (req, res) => {
       await Employee.findByIdAndUpdate(order.assignedEmployee, {
         activeOrders: activeCount
       });
-
-      console.log(`✅ Updated activeOrders to ${activeCount}`);
     }
+
+    // ✅ Log to history
+    await EmployeeOrderHistory.create({
+      employee: order.assignedEmployee,
+      orderId: order._id,
+      status: 'Completed'
+    });
 
     res.json({ updatedOrder: order });
   } catch (err) {
@@ -100,36 +103,61 @@ const completeOrder = async (req, res) => {
 
 
 // ✅ Employee declines order
+// ✅ Employee declines order
 const declineOrder = async (req, res) => {
-  const { orderId } = req.body;
+  const { orderId, reason } = req.body;
+
   try {
     const order = await Order.findById(orderId);
     if (!order) return res.status(404).json({ error: 'Order not found' });
 
     const employeeId = order.assignedEmployee;
 
+    // 🧽 Clear employee assignment
     order.assignedEmployee = null;
     order.employeeStatus = 'Declined';
-    order.orderStatus = 'Pending';
+    order.orderStatus = 'Declined by Employee';
+    order.declineReason = reason || ''; // ✅ ✅ ✅ You were missing this line!
     await order.save();
 
-    if (employeeId) {
-      const employee = await Employee.findById(employeeId);
-      if (employee) {
-        const activeCount = await Order.countDocuments({
-          assignedEmployee: employee._id,
-          employeeStatus: { $nin: ['Completed', 'Declined'] }
-        });
-        employee.activeOrders = activeCount;
-        await employee.save();
-        console.log(`❌ Order declined. activeOrders now ${activeCount} for ${employee.empId}`);
-      }
+    // 📦 Recalculate active orders
+    const employee = await Employee.findById(employeeId);
+    if (employee && employee.activeOrders > 0) {
+      employee.activeOrders -= 1;
+      await employee.save();
     }
 
-    res.json({ message: 'Order declined', updatedOrder: order });
+    // ✅ Log to history
+    await EmployeeOrderHistory.create({
+      employee: employeeId,
+      orderId: order._id,
+      status: 'Declined',
+      declineReason: reason || ''
+    });
+
+    res.json({ message: 'Order declined and logged', updatedOrder: order });
   } catch (err) {
     console.error('❌ Error declining order:', err);
     res.status(500).json({ error: 'Failed to decline order' });
+  }
+};
+
+
+const getEmployeeOrderHistory = async (req, res) => {
+  const empId = req.params.empId;
+
+  try {
+    const employee = await Employee.findOne({ empId });
+    if (!employee) return res.status(404).json({ error: 'Employee not found' });
+
+    const history = await EmployeeOrderHistory.find({ employee: employee._id })
+      .populate('orderId')
+      .sort({ date: -1 });
+
+    res.json({ history });
+  } catch (err) {
+    console.error('❌ Error fetching history:', err);
+    res.status(500).json({ error: 'Failed to fetch history' });
   }
 };
 
@@ -138,5 +166,6 @@ module.exports = {
   getEmployeeOrders,
   updateItemStatus,
   completeOrder,
-  declineOrder
+  declineOrder,
+  getEmployeeOrderHistory
 };

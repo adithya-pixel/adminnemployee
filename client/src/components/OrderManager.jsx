@@ -52,6 +52,13 @@ const OrderManager = () => {
             </p>
             <p><strong>Employee Status:</strong> {order.employeeStatus || '-'}</p>
 
+            {/* ✅ Show decline reason if applicable */}
+            {(order.employeeStatus === 'Declined' || order.orderStatus === 'Declined by Employee') && (
+              <p style={{ color: 'crimson' }}>
+                <strong>Decline Reason:</strong> {order.declineReason || 'Not specified'}
+              </p>
+            )}
+
             <p><strong>Assigned Delivery Agent:</strong>{' '}
               {order.assignedAgent
                 ? `${order.assignedAgent.agentId} - ${order.assignedAgent.name}`

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useEmployeePannelViewModel } from '../viewmodels/useEmployeePannelViewModel';
 import { useNavigate } from 'react-router-dom';
 import '../styles/EmployeePanel.css';
@@ -6,20 +6,32 @@ import '../styles/EmployeePanel.css';
 const EmployeePanel = () => {
   const navigate = useNavigate();
   const {
-  employee,
-  orders,
-  loading,
-  error,
-  fetchEmployeeData,
-  updateItemStatus,
-  completeOrder,
-  declineOrder
-} = useEmployeePannelViewModel(); // ✅ correct name
+    employee,
+    orders,
+    loading,
+    error,
+    fetchEmployeeData,
+    updateItemStatus,
+    completeOrder,
+    declineOrder
+  } = useEmployeePannelViewModel();
 
+  const [declineReasons, setDeclineReasons] = useState({});
 
   useEffect(() => {
-    fetchEmployeeData(); // 🔁 Fetch once when component mounts
-  }, [fetchEmployeeData]); // ✅ No warning now
+    fetchEmployeeData();
+  }, [fetchEmployeeData]);
+
+  const handleReasonChange = (orderId, reason) => {
+    setDeclineReasons(prev => ({
+      ...prev,
+      [orderId]: reason
+    }));
+  };
+
+  const activeOrders = orders.filter(
+    order => order.employeeStatus !== 'Completed' && order.employeeStatus !== 'Declined'
+  );
 
   if (loading) return <p>Loading employee dashboard...</p>;
   if (error) return <p style={{ color: 'red' }}>{error}</p>;
@@ -37,11 +49,12 @@ const EmployeePanel = () => {
 
       <h3>Assigned Orders</h3>
 
-      {orders.length === 0 ? (
-        <p>No orders assigned.</p>
+      {activeOrders.length === 0 ? (
+        <p>No active orders assigned.</p>
       ) : (
-        orders.map((order) => {
+        activeOrders.map((order) => {
           const allPacked = order.items.every((item) => item.status === 'Packed');
+          const reason = declineReasons[order._id]?.trim() || '';
 
           return (
             <div key={order._id} className="employee-order-card">
@@ -91,12 +104,30 @@ const EmployeePanel = () => {
                     ✅ Complete Order
                   </button>
                 ) : (
-                  <button
-                    className="decline-btn"
-                    onClick={() => declineOrder(order._id)}
-                  >
-                    ❌ Decline Order
-                  </button>
+                  <div className="decline-section">
+                    <textarea
+                      placeholder="Enter reason for declining..."
+                      value={declineReasons[order._id] || ''}
+                      onChange={(e) => handleReasonChange(order._id, e.target.value)}
+                      className="decline-reason-input"
+                      rows={2}
+                    />
+                    <button
+                      className="decline-btn"
+                      onClick={() => {
+                        if (!reason) {
+                          alert('⚠️ Please enter a reason before declining the order.');
+                          return;
+                        }
+                        const confirmDecline = window.confirm('Are you sure you want to decline this order?');
+                        if (confirmDecline) {
+                          declineOrder(order._id, reason);
+                        }
+                      }}
+                    >
+                      ❌ Decline Order
+                    </button>
+                  </div>
                 )}
               </div>
             </div>

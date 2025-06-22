@@ -160,6 +160,7 @@ exports.updateItemStatus = async (req, res) => {
 };
 
 // ✅ Allow employee to decline an order
+// ✅ Allow employee to decline an order
 exports.declineOrder = async (req, res) => {
   const { orderId, reason } = req.body;
 
@@ -167,24 +168,27 @@ exports.declineOrder = async (req, res) => {
     const order = await Order.findById(orderId);
     if (!order) return res.status(404).json({ message: 'Order not found' });
 
-    // Clear employee assignment
     const employeeId = order.assignedEmployee;
 
+    // Save reason inside the order
     order.assignedEmployee = null;
     order.employeeStatus = 'Declined';
     order.orderStatus = 'Pending';
+    order.declineReason = reason || ''; // 📝 Add reason here
     await order.save();
 
-    // Reduce active orders count
-    const Employee = require('../models/Employee');
-    const emp = await Employee.findById(employeeId);
-    if (emp && emp.activeOrders > 0) {
-      emp.activeOrders -= 1;
-      await emp.save();
+    // Decrease activeOrders count of employee
+    if (employeeId) {
+      const employee = await Employee.findById(employeeId);
+      if (employee && employee.activeOrders > 0) {
+        employee.activeOrders -= 1;
+        await employee.save();
+      }
     }
 
     res.json({ message: 'Order declined successfully', order });
   } catch (err) {
+    console.error('❌ Error declining order:', err);
     res.status(500).json({ message: 'Server error' });
   }
 };
