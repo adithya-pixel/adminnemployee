@@ -29,7 +29,7 @@ const OrderManager = () => {
 
             {order.addressId ? (
               <div>
-                <p><strong>Customer Name:</strong> {order.addressId.full_name}</p>
+                <p><strong>Customer:</strong> {order.addressId.full_name}</p>
                 <p><strong>Phone:</strong> {order.addressId.phone_no}</p>
                 <p><strong>Address:</strong><br />
                   {order.addressId.house_building_name},<br />
@@ -108,7 +108,7 @@ const OrderManager = () => {
               </div>
             )}
 
-            {/* ✅ Assign Agent only when employee is completed */}
+            {/* ✅ Assign Agent only if Employee completed */}
             {order.employeeStatus === 'Completed' && !order.assignedAgent && (
               <div>
                 <label>

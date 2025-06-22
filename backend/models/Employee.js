@@ -9,11 +9,7 @@ const employeeSchema = new mongoose.Schema({
   idProof: { type: String },
   password: { type: String, required: true },
   empNumber: { type: Number, unique: true },
-  availability: {
-    type: String,
-    enum: ['completed', 'pending'],
-    default: 'completed'
-  },
+  
   activeOrders: { type: Number, default: 0 }, // ✅ new field
 });
 

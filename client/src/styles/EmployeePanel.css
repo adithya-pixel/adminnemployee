@@ -1,0 +1,53 @@
+.employee-panel {
+  padding: 24px;
+  max-width: 900px;
+  margin: auto;
+}
+
+.employee-info, .employee-order-card {
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.item-table {
+  width: 100%;
+  margin-top: 12px;
+  border-collapse: collapse;
+}
+
+.item-table th, .item-table td {
+  padding: 8px;
+  border: 1px solid #ccc;
+  text-align: left;
+}
+
+.order-actions {
+  margin-top: 16px;
+}
+
+.complete-btn, .decline-btn, .logout-btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.complete-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+.decline-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.logout-btn {
+  background-color: #343a40;
+  color: white;
+  margin-top: 30px;
+}

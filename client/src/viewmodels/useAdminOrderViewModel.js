@@ -14,7 +14,7 @@ const useAdminOrderViewModel = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // ✅ Load all data at once
+  // 🔄 Fetch all admin data (orders, employees, agents)
   const loadData = async () => {
     try {
       const [ordersRes, employeesRes, agentsRes] = await Promise.all([
@@ -25,33 +25,34 @@ const useAdminOrderViewModel = () => {
       setOrders(ordersRes.data);
       setAvailableEmployees(employeesRes.data);
       setAvailableAgents(agentsRes.data);
+      setError('');
     } catch (err) {
-      console.error('❌ Error loading data:', err);
-      setError('❌ Failed to load data');
+      console.error('❌ Error loading admin order data:', err);
+      setError('Failed to load admin data');
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ Assign employee to an order
+  // ✅ Assign employee
   const assignEmployeeToOrder = async (orderId, empId) => {
     try {
       await assignEmployee(orderId, empId);
-      loadData();
+      await loadData();
     } catch (err) {
       console.error('❌ Failed to assign employee:', err);
-      setError('❌ Failed to assign employee');
+      setError('Failed to assign employee');
     }
   };
 
-  // ✅ Assign delivery agent to an order
+  // ✅ Assign delivery agent
   const assignAgentToOrder = async (orderId, agentId) => {
     try {
       await assignDeliveryAgent(orderId, agentId);
-      loadData();
+      await loadData();
     } catch (err) {
-      console.error('❌ Failed to assign agent:', err);
-      setError('❌ Failed to assign agent');
+      console.error('❌ Failed to assign delivery agent:', err);
+      setError('Failed to assign delivery agent');
     }
   };
 

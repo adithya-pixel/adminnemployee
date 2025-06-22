@@ -102,6 +102,7 @@ exports.assignDeliveryAgent = async (req, res) => {
 };
 
 // ✅ Mark order as completed and decrement counts
+// ✅ Mark order as completed by employee only
 exports.markOrderCompleted = async (req, res) => {
   const { orderId } = req.body;
 
@@ -109,34 +110,81 @@ exports.markOrderCompleted = async (req, res) => {
     const order = await Order.findById(orderId);
     if (!order) return res.status(404).json({ message: 'Order not found' });
 
-    // Decrease employee activeOrders
-    const employeeId = order.assignedEmployee;
-    if (employeeId) {
-      const employee = await Employee.findById(employeeId);
-      if (employee && employee.activeOrders > 0) {
-        employee.activeOrders -= 1;
-        await employee.save();
-      }
-    }
-
-    // Decrease agent activeDeliveries
-    const agentId = order.assignedAgent;
-    if (agentId) {
-      const agent = await DeliveryAgent.findById(agentId);
-      if (agent && agent.activeDeliveries > 0) {
-        agent.activeDeliveries -= 1;
-        await agent.save();
-      }
-    }
-
-    order.orderStatus = 'Completed';
+    // ✅ Only update employeeStatus, NOT agentStatus
     order.employeeStatus = 'Completed';
-    order.agentStatus = 'Delivered';
+    order.orderStatus = 'Awaiting Delivery Agent'; // 🟡 Optional: Update this for clarity
     await order.save();
 
-    res.json({ message: 'Order marked as completed successfully', order });
+    // ✅ Recalculate employee activeOrders
+    const employeeId = order.assignedEmployee;
+    if (employeeId) {
+      const activeCount = await Order.countDocuments({
+        assignedEmployee: employeeId,
+        employeeStatus: { $nin: ['Completed', 'Declined'] }
+      });
+
+      await Employee.findByIdAndUpdate(employeeId, {
+        activeOrders: activeCount
+      });
+
+      console.log(`✅ Updated activeOrders to ${activeCount} for employee`);
+    }
+
+    res.json({ message: 'Order marked as completed by employee', updatedOrder: order });
   } catch (err) {
     console.error('❌ Error marking order completed:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+// ✅ Update status of a specific item in an order
+exports.updateItemStatus = async (req, res) => {
+  const { orderId, itemIndex, status } = req.body;
+
+  try {
+    const order = await Order.findById(orderId);
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+
+    // update specific item status
+    if (order.items[itemIndex]) {
+      order.items[itemIndex].status = status;
+      await order.save();
+      res.json({ message: 'Item status updated', order });
+    } else {
+      res.status(400).json({ message: 'Invalid item index' });
+    }
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// ✅ Allow employee to decline an order
+exports.declineOrder = async (req, res) => {
+  const { orderId, reason } = req.body;
+
+  try {
+    const order = await Order.findById(orderId);
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+
+    // Clear employee assignment
+    const employeeId = order.assignedEmployee;
+
+    order.assignedEmployee = null;
+    order.employeeStatus = 'Declined';
+    order.orderStatus = 'Pending';
+    await order.save();
+
+    // Reduce active orders count
+    const Employee = require('../models/Employee');
+    const emp = await Employee.findById(employeeId);
+    if (emp && emp.activeOrders > 0) {
+      emp.activeOrders -= 1;
+      await emp.save();
+    }
+
+    res.json({ message: 'Order declined successfully', order });
+  } catch (err) {
     res.status(500).json({ message: 'Server error' });
   }
 };

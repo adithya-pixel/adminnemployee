@@ -13,5 +13,8 @@ router.put('/assign-agent', orderController.assignDeliveryAgent);
 
 // ✅ Completion route
 router.put('/mark-completed', orderController.markOrderCompleted);
+router.post('/update-item-status', orderController.updateItemStatus);
+router.post('/decline-order', orderController.declineOrder);
+
 
 module.exports = router;

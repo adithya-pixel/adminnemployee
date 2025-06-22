@@ -1,11 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import DeliveryAgentManager from './components/DeliveryAgentManager'; // ✅ Correct file
+import App from './App'; // ✅ Import App component
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
   <React.StrictMode>
-    <DeliveryAgentManager />
+    <App /> {/* ✅ Render App */}
   </React.StrictMode>
 );
