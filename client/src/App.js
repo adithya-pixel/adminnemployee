@@ -2,9 +2,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/OrderManager';
-import EmployeePanel from './components/EmployeePannel';
-
-// import AdminPanel from './components/AdminPanel'; // Uncomment if needed
+import EmployeePanel from './components/EmployeePannel'; 
+import EmployeeOrderHistory from './components/EmployeeOrderHistory';
 
 const App = () => {
   const employeeId = localStorage.getItem('employeeId');
@@ -14,17 +13,18 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Login />} />
 
-        {/* Optional Admin Panel */}
-        {/* <Route
-          path="/admin-panel"
-          element={token ? <AdminPanel /> : <Navigate to="/" />}
-        /> */}
-
+        {/* Employee Panel */}
         <Route
           path="/employee-panel"
           element={employeeId ? <EmployeePanel /> : <Navigate to="/" />}
         />
 
+        <Route
+          path="/employee/order-history"
+          element={employeeId ? <EmployeeOrderHistory /> : <Navigate to="/" />}
+        />
+
+        {/* Default redirect for unknown routes */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>

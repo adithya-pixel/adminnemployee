@@ -17,6 +17,7 @@ const EmployeePanel = () => {
   } = useEmployeePannelViewModel();
 
   const [declineReasons, setDeclineReasons] = useState({});
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     fetchEmployeeData();
@@ -38,8 +39,30 @@ const EmployeePanel = () => {
 
   return (
     <div className="employee-panel">
-      <h2>Employee Dashboard</h2>
+      {/* 🔧 Top Bar with Settings */}
+      <div className="top-bar">
+        <h2>Employee Dashboard</h2>
+        <div className="settings-wrapper">
+          <button className="settings-btn" onClick={() => setShowSettings(!showSettings)}>⚙️</button>
+          {showSettings && (
+            <div className="settings-dropdown">
+              <button onClick={() => navigate('/employee/order-history')}>
+                🕓 View Order History
+              </button>
+              <button
+                onClick={() => {
+                  localStorage.removeItem('employeeId');
+                  navigate('/');
+                }}
+              >
+                🔓 Logout
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
 
+      {/* 👤 Employee Info */}
       {employee && (
         <div className="employee-info">
           <p><strong>Name:</strong> {employee.name}</p>
@@ -134,16 +157,6 @@ const EmployeePanel = () => {
           );
         })
       )}
-
-      <button
-        className="logout-btn"
-        onClick={() => {
-          localStorage.removeItem('employeeId');
-          navigate('/');
-        }}
-      >
-        Logout
-      </button>
     </div>
   );
 };
