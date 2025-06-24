@@ -1,30 +1,67 @@
 // App.js
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+
+// Login and Employee components
 import Login from './components/Login';
-import EmployeePanel from './components/EmployeePannel'; 
+import EmployeePanel from './components/EmployeePannel';
 import EmployeeOrderHistory from './components/EmployeeOrderHistory';
+
+// Admin components
+import AdminDashboard from './components/AdminDashboard';
+import ViewComplaints from './components/ViewComplaints';
+import DeliveryAgentManager from './components/DeliveryAgentManager';
+import EmployeeManager from './components/EmployeeManager';
+import OrderManager from './components/OrderManager';
+import Settings from './components/Settings';
 
 const App = () => {
   const employeeId = localStorage.getItem('employeeId');
+  const adminToken = localStorage.getItem('token'); // ✅ Use this to check admin login
 
   return (
     <Router>
       <Routes>
+        {/* Login Page */}
         <Route path="/" element={<Login />} />
 
-        {/* Employee Panel */}
+        {/* Admin Protected Routes */}
+        <Route
+          path="/admin-dashboard"
+          element={adminToken ? <AdminDashboard /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/view-complaints"
+          element={adminToken ? <ViewComplaints /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/delivery-agent-manager"
+          element={adminToken ? <DeliveryAgentManager /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/employee-manager"
+          element={adminToken ? <EmployeeManager /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/order-manager"
+          element={adminToken ? <OrderManager /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/settings"
+          element={adminToken ? <Settings /> : <Navigate to="/" />}
+        />
+
+        {/* Employee Protected Routes */}
         <Route
           path="/employee-panel"
           element={employeeId ? <EmployeePanel /> : <Navigate to="/" />}
         />
-
         <Route
           path="/employee/order-history"
           element={employeeId ? <EmployeeOrderHistory /> : <Navigate to="/" />}
         />
 
-        {/* Default redirect for unknown routes */}
+        {/* Fallback Route */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>

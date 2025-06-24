@@ -1,0 +1,31 @@
+.complaints-container {
+    padding: 40px;
+    max-width: 1000px;
+    margin: 50px;
+}
+
+.complaint-card {
+  background: #fff;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  letter-spacing: 0.5px;
+  word-spacing: 2px;
+  line-height: 1.6;
+}
+
+.back-button {
+  margin-bottom: 20px;
+  padding: 8px 16px;
+  background-color: hsla(180, 2%, 11%, 0.897);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+}
+
+.back-button:hover {
+  background-color:hsl(165, 5%, 71%);
+}

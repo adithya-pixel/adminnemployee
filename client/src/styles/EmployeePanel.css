@@ -1,58 +1,134 @@
-/* Container */
-.employee-panel {
-  padding: 24px;
-  max-width: 900px;
-  margin: auto;
+/* Reset and base */
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
   font-family: 'Segoe UI', sans-serif;
+  background-color: #f1f3f5;
+  overflow-x: hidden;
+}
+
+/* Main dashboard container */
+.employee-dashboard {
+  max-width: 960px;
+  width: 100%;
+  margin: 40px auto;
+  padding: 24px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  min-height: 80vh;
+}
+
+/* Top bar and heading */
+.employee-dashboard .top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.employee-dashboard h2 {
+  margin: 0;
+  padding: 6px 0;
+  font-size: 22px;
+  font-weight: 600;
   color: #333;
 }
 
-/* Info Cards */
-.employee-info,
-.employee-order-card {
-  background-color: #ffffff;
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  transition: all 0.2s ease-in-out;
+/* Settings dropdown */
+.settings-wrapper {
+  position: relative;
 }
 
-/* Table Styling */
+.settings-btn {
+  background: none;
+  font-size: 20px;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+}
+
+.settings-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.settings-dropdown {
+  position: absolute;
+  top: 36px;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 180px;
+  z-index: 100;
+}
+
+.settings-dropdown button {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  background: none;
+  border: none;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  color: #333;
+}
+
+.settings-dropdown button:hover {
+  background-color: #f1f1f1;
+}
+
+/* Employee info and order card */
+.employee-info,
+.employee-order-card {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Item table styles */
 .item-table {
   width: 100%;
-  margin-top: 12px;
+  margin-top: 10px;
   border-collapse: collapse;
+  font-size: 14px;
 }
 
 .item-table th,
 .item-table td {
-  padding: 10px;
-  border: 1px solid #e0e0e0;
+  padding: 8px;
+  border: 1px solid #ddd;
   text-align: left;
-  font-size: 14px;
 }
 
 .item-table th {
-  background-color: #f2f2f2;
+  background-color: #f0f0f0;
   font-weight: 600;
 }
 
-/* Action Buttons */
+/* Action buttons */
 .order-actions {
-  margin-top: 16px;
+  margin-top: 12px;
 }
 
 .complete-btn,
-.decline-btn,
-.logout-btn {
-  padding: 10px 20px;
+.decline-btn {
+  padding: 8px 16px;
   border: none;
-  border-radius: 8px;
-  margin-right: 10px;
-  cursor: pointer;
+  border-radius: 6px;
   font-size: 14px;
   font-weight: 500;
+  cursor: pointer;
+  margin-top: 8px;
+  margin-right: 8px;
   transition: background-color 0.2s ease;
 }
 
@@ -74,93 +150,29 @@
   background-color: #c82333;
 }
 
-.logout-btn {
-  background-color: #343a40;
-  color: white;
-  margin-top: 30px;
-}
-
-.logout-btn:hover {
-  background-color: #23272b;
-}
-
-/* Decline Reason Textarea */
+/* Decline textarea */
 .decline-reason-input {
   width: 100%;
-  margin-bottom: 8px;
-  padding: 10px;
+  margin-top: 10px;
+  padding: 8px;
   border: 1px solid #ccc;
   border-radius: 6px;
+  font-size: 14px;
   resize: vertical;
-  font-size: 14px;
+}
+
+/* No orders message */
+.empty-message {
+  text-align: center;
+  padding: 24px;
   background-color: #fff;
-  box-sizing: border-box;
+  border-radius: 10px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  margin-top: 20px;
 }
 
-/* Top Bar */
-.top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-/* Settings Dropdown */
-.settings-wrapper {
-  position: relative;
-}
-
-.settings-btn {
-  background: none;
-  font-size: 22px;
-  border: none;
-  cursor: pointer;
-  padding: 6px;
-  border-radius: 50%;
-  transition: background-color 0.2s ease;
-}
-
-.settings-btn:hover {
-  background-color: #f0f0f0;
-}
-
-.settings-dropdown {
-  position: absolute;
-  top: 36px;
-  right: 0;
-  background: white;
-  border: 1px solid #ddd;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  min-width: 160px;
-  z-index: 99;
-  animation: dropdown-fade 0.2s ease-in-out;
-}
-
-.settings-dropdown button {
-  padding: 12px 16px;
-  background: none;
-  border: none;
-  text-align: left;
-  cursor: pointer;
-  font-size: 14px;
-  color: #333;
-}
-
-.settings-dropdown button:hover {
-  background: #f8f9fa;
-}
-
-/* Dropdown animation */
-@keyframes dropdown-fade {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.tip-text {
+  font-size: 13px;
+  color: #666;
+  margin-top: 6px;
 }

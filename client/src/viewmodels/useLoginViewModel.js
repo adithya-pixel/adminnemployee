@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // ✅ for navigation
+import { useNavigate } from 'react-router-dom';
 import authService from '../models/authService';
 
 export const useLoginViewModel = () => {
-  const [loginType, setLoginType] = useState('employee'); // 'admin' or 'employee'
+  const [loginType, setLoginType] = useState('employee');
   const [formData, setFormData] = useState({
     username: '',
     empId: '',
@@ -13,9 +13,8 @@ export const useLoginViewModel = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const navigate = useNavigate(); // ✅
+  const navigate = useNavigate();
 
-  // Handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -25,7 +24,6 @@ export const useLoginViewModel = () => {
     if (error) setError('');
   };
 
-  // Handle login type change
   const handleLoginTypeChange = (type) => {
     setLoginType(type);
     setFormData({
@@ -37,7 +35,6 @@ export const useLoginViewModel = () => {
     setSuccess('');
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -55,7 +52,7 @@ export const useLoginViewModel = () => {
         if (response.success) {
           authService.setToken(response.token);
           setSuccess(`${response.message}! Welcome ${response.user.username}!`);
-          navigate('/admin-panel'); // ✅ redirect admin (optional)
+          navigate('/admin-dashboard'); // ✅ Redirect admin
         }
       } else {
         if (!formData.empId || !formData.password) {
@@ -64,9 +61,9 @@ export const useLoginViewModel = () => {
         response = await authService.employeeLogin(formData.empId, formData.password);
         if (response.success) {
           authService.setToken(response.token);
-          localStorage.setItem('employeeId', response.user.empId); // ✅ store employee ID
+          localStorage.setItem('employeeId', response.user.empId);
           setSuccess(`${response.message}! Welcome ${response.user.name}!`);
-          navigate('/employee-panel'); 
+          navigate('/employee-panel'); // ✅ Redirect employee
         }
       }
 
@@ -75,6 +72,7 @@ export const useLoginViewModel = () => {
         empId: '',
         password: ''
       });
+
     } catch (err) {
       setError(err.message || 'Login failed');
     } finally {
@@ -82,7 +80,6 @@ export const useLoginViewModel = () => {
     }
   };
 
-  // Reset form
   const resetForm = () => {
     setFormData({
       username: '',

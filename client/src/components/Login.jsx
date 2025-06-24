@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLoginViewModel } from '../viewmodels/useLoginViewModel';
 import '../styles/Login.css';
 
 const Login = () => {
+  const navigate = useNavigate();
+
   const {
     loginType,
     formData,
@@ -13,6 +16,13 @@ const Login = () => {
     handleLoginTypeChange,
     handleSubmit
   } = useLoginViewModel();
+
+  // ✅ Redirect to AdminDashboard after successful admin login
+  useEffect(() => {
+    if (success && loginType === 'admin') {
+      navigate('/admin-dashboard');
+    }
+  }, [success, loginType, navigate]);
 
   return (
     <div className="login-container">
@@ -25,7 +35,7 @@ const Login = () => {
         <div className="login-type-selection">
           <h3 className="login-type-title">Select Login Type</h3>
           <div className="checkbox-container">
-            <div 
+            <div
               className={`checkbox-item ${loginType === 'admin' ? 'active' : ''}`}
               onClick={() => handleLoginTypeChange('admin')}
             >
@@ -39,8 +49,8 @@ const Login = () => {
               />
               <label htmlFor="admin" className="checkbox-label">Admin</label>
             </div>
-            
-            <div 
+
+            <div
               className={`checkbox-item ${loginType === 'employee' ? 'active' : ''}`}
               onClick={() => handleLoginTypeChange('employee')}
             >
