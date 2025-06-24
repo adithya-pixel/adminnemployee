@@ -1,7 +1,7 @@
 // App.js
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Login from './components/OrderManager';
+import Login from './components/Login';
 import EmployeePanel from './components/EmployeePannel'; 
 import EmployeeOrderHistory from './components/EmployeeOrderHistory';
 
