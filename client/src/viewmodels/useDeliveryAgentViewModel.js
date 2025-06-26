@@ -1,4 +1,6 @@
+// src/viewmodels/useDeliveryAgentViewModel.js
 import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const API = 'http://localhost:5000/api/delivery-agents';
@@ -9,7 +11,10 @@ const useDeliveryAgentViewModel = () => {
   const [editingId, setEditingId] = useState(null);
   const [error, setError] = useState('');
 
-  // ✅ Load agents from backend
+  const location = useLocation();
+  const navigate = useNavigate(); // ✅ for clearing state after prefill
+
+  // Load agent list
   const load = async () => {
     try {
       const res = await axios.get(API);
@@ -23,7 +28,27 @@ const useDeliveryAgentViewModel = () => {
     load();
   }, []);
 
-  // ✅ Handle input and file change
+  // Preload form for editing
+  useEffect(() => {
+    const editAgent = location.state?.editAgent;
+    if (editAgent) {
+      setForm({
+        _id: editAgent._id,
+        name: editAgent.name,
+        address: editAgent.address,
+        phoneNumber: editAgent.phoneNumber,
+        licenseNumber: editAgent.licenseNumber,
+        vehicleType: editAgent.vehicleType,
+        password: '',
+        license: null,
+      });
+      setEditingId(editAgent._id);
+
+      // ✅ Clear route state to avoid reuse on back
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location, navigate]);
+
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     setForm((prev) => ({
@@ -32,7 +57,6 @@ const useDeliveryAgentViewModel = () => {
     }));
   };
 
-  // ✅ Form validation
   const validate = () => {
     const { name, address, phoneNumber, licenseNumber, password, vehicleType, license } = form;
 
@@ -41,31 +65,20 @@ const useDeliveryAgentViewModel = () => {
     if (!phoneNumber || !/^\d{10}$/.test(phoneNumber)) return 'Phone must be 10 digits';
     if (!licenseNumber || licenseNumber.length < 5) return 'License number must be at least 5 characters';
     if (!vehicleType) return 'Please select a vehicle type';
-
-    if (!editingId && (!password || password.length < 6)) {
-      return 'Password must be at least 6 characters';
-    }
-
+    if (!editingId && (!password || password.length < 6)) return 'Password must be at least 6 characters';
     if (!editingId && !license) return 'License file is required';
 
     return '';
   };
 
-  // ✅ Save (Create/Update)
-  const save = async () => {
+  const save = async (onAddSuccess) => {
     const errorMsg = validate();
-    if (errorMsg) {
-      setError(`⚠️ ${errorMsg}`);
-      return;
-    }
+    if (errorMsg) return setError(`⚠️ ${errorMsg}`);
 
     const formData = new FormData();
-
     for (let key in form) {
-      // Skip empty password if editing
       if (editingId && key === 'password' && !form[key]) continue;
-
-      if (form[key] !== null && form[key] !== undefined) {
+      if (form[key] !== undefined && form[key] !== null) {
         formData.append(key, form[key]);
       }
     }
@@ -73,46 +86,29 @@ const useDeliveryAgentViewModel = () => {
     try {
       if (editingId) {
         await axios.put(`${API}/${editingId}`, formData);
+        alert('✅ Agent updated successfully');
+        await load(); // just reload agents
       } else {
         await axios.post(API, formData);
+        alert('✅ Agent added successfully');
+        if (onAddSuccess) onAddSuccess(); // navigate only on add
       }
-
-      await load(); // refresh agent list
-      resetForm();  // clear form
+      resetForm();
     } catch (err) {
-      console.error('❌ Failed to save agent:', err);
+      console.error('❌ Failed to save:', err);
       setError('❌ Failed to save agent');
     }
   };
 
-  // ✅ Edit an agent
-  const edit = (agent) => {
-    setForm({
-      _id: agent._id,
-      name: agent.name,
-      address: agent.address,
-      phoneNumber: agent.phoneNumber,
-      licenseNumber: agent.licenseNumber,
-      vehicleType: agent.vehicleType,
-      password: '',
-      license: null,
-    });
-    setEditingId(agent._id);
-    setError('');
-  };
-
-  // ✅ Delete agent
   const remove = async (id) => {
-    if (!window.confirm('Delete this agent?')) return;
     try {
       await axios.delete(`${API}/${id}`);
       await load();
     } catch (err) {
-      console.error('❌ Failed to delete agent:', err);
+      console.error('❌ Failed to delete:', err);
     }
   };
 
-  // ✅ Reset form and editing mode
   const resetForm = () => {
     setForm({});
     setEditingId(null);
@@ -122,14 +118,12 @@ const useDeliveryAgentViewModel = () => {
   return {
     agents,
     form,
-    setForm,
-    editingId,
     error,
+    editingId,
     handleChange,
     save,
-    edit,
     remove,
-    resetForm, // ✅ important for cancel button
+    resetForm,
   };
 };
 

@@ -6,6 +6,7 @@ const useEmployeeViewModel = () => {
   const [form, setForm] = useState({});
   const [editingId, setEditingId] = useState(null);
 
+  // Load employees initially
   const load = async () => {
     const res = await api.fetchEmployees();
     setEmployees(res.data);
@@ -15,6 +16,7 @@ const useEmployeeViewModel = () => {
     load();
   }, []);
 
+  // Handle form field changes
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     setForm(prev => ({
@@ -23,44 +25,62 @@ const useEmployeeViewModel = () => {
     }));
   };
 
+  // Save or update employee
   const save = async () => {
     const formData = new FormData();
+
+    // Append all fields
     for (let key in form) {
-      formData.append(key, form[key]);
+      if (form[key] !== null && form[key] !== undefined) {
+        formData.append(key, form[key]);
+      }
     }
 
-    if (editingId) {
-      await api.updateEmployee(editingId, formData);
-    } else {
-      await api.addEmployee(formData);
-    }
+    try {
+      if (form._id || editingId) {
+        const id = form._id || editingId; // ensure _id is used if available
+        await api.updateEmployee(id, formData);
+      } else {
+        await api.addEmployee(formData);
+      }
 
-    setForm({});
-    setEditingId(null);
-    load();
+      await load();
+      setForm({});
+      setEditingId(null);
+    } catch (err) {
+      console.error('❌ Failed to save/update employee', err);
+    }
   };
 
+  // Set form for editing
   const edit = (emp) => {
     setForm({
       _id: emp._id,
       empId: emp.empId,
       name: emp.name,
       address: emp.address,
-      phoneNumber: emp.phoneNumber
+      phoneNumber: emp.phoneNumber,
+      password: '',
+      idProof: null,
     });
     setEditingId(emp._id);
   };
 
+  // Delete employee
   const remove = async (id) => {
-    await api.deleteEmployee(id);
-    load();
-  };
+  const confirmDelete = window.confirm("Are you sure you want to delete this employee?");
+  if (!confirmDelete) return;
+
+  await api.deleteEmployee(id);
+  load();
+};
 
   return {
     employees,
     form,
-    setForm,          // ✅ Important fix
+    setForm,
     editingId,
+    setEditingId, // helpful if needed from outside
     handleChange,
     save,
     edit,

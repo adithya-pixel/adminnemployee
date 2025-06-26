@@ -1,10 +1,8 @@
-// src/viewmodels/useSettingsViewModel.js
 import { useState, useEffect } from 'react';
-import { getStoreData, updateStoreData } from '../models/settingsModel';
+import { getStoreData, updateStoreData, uploadLogo } from '../models/settingsModel';
 
 const useStoreViewModel = () => {
   const [storeData, setStoreData] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(true);
 
@@ -28,24 +26,37 @@ const useStoreViewModel = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const saveChanges = async () => {
+  const saveChanges = async (fieldToUpdate = null) => {
     try {
-      const updated = await updateStoreData(formData._id, formData);
+      const updatedData = fieldToUpdate
+        ? { ...storeData, [fieldToUpdate]: formData[fieldToUpdate] }
+        : formData;
+
+      const updated = await updateStoreData(storeData._id, updatedData);
       setStoreData(updated);
-      setIsEditing(false);
+      setFormData(updated);
     } catch (error) {
       console.error('❌ Failed to update store data', error);
+    }
+  };
+
+  const uploadStoreLogo = async (file) => {
+    try {
+      const updated = await uploadLogo(storeData._id, file);
+      setStoreData(updated);
+      setFormData(updated);
+    } catch (err) {
+      console.error('❌ Logo upload failed', err);
     }
   };
 
   return {
     storeData,
     formData,
-    isEditing,
     loading,
-    setIsEditing,
     handleChange,
-    saveChanges
+    saveChanges,
+    uploadStoreLogo
   };
 };
 

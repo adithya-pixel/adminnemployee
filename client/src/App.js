@@ -12,9 +12,10 @@ import AdminDashboard from './components/AdminDashboard';
 import ViewComplaints from './components/ViewComplaints';
 import DeliveryAgentManager from './components/DeliveryAgentManager';
 import EmployeeManager from './components/EmployeeManager';
+import EmployeeList from './components/EmployeeList';
 import OrderManager from './components/OrderManager';
 import Settings from './components/Settings';
-
+import DeliveryAgentList from './components/DeliveryAgentList';
 const App = () => {
   const employeeId = localStorage.getItem('employeeId');
   const adminToken = localStorage.getItem('token'); // ✅ Use this to check admin login
@@ -37,10 +38,16 @@ const App = () => {
         <Route
           path="/delivery-agent-manager"
           element={adminToken ? <DeliveryAgentManager /> : <Navigate to="/" />}
+          
         />
+         <Route path="/delivery-agents" element={<DeliveryAgentList />} />
         <Route
           path="/employee-manager"
           element={adminToken ? <EmployeeManager /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/employees"
+          element={adminToken ? <EmployeeList /> : <Navigate to="/" />}
         />
         <Route
           path="/order-manager"

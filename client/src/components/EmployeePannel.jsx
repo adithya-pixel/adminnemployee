@@ -1,7 +1,8 @@
+// src/components/EmployeePannel.jsx
 import React, { useEffect, useState } from 'react';
 import { useEmployeePannelViewModel } from '../viewmodels/useEmployeePannelViewModel';
 import { useNavigate } from 'react-router-dom';
-import '../styles/EmployeePanel.css';
+import '../styles/EmployeePanel.css'; // Make sure this name matches the renamed CSS
 
 const EmployeePanel = () => {
   const navigate = useNavigate();
@@ -34,6 +35,9 @@ const EmployeePanel = () => {
     order => order.employeeStatus !== 'Completed' && order.employeeStatus !== 'Declined'
   );
 
+  console.log("Fetched Orders:", orders);
+  console.log("Active Orders:", activeOrders);
+
   if (loading) return <p className="loading-msg">Loading employee dashboard...</p>;
   if (error) return <p className="error-msg">{error}</p>;
 
@@ -46,17 +50,11 @@ const EmployeePanel = () => {
             <button className="settings-btn" onClick={() => setShowSettings(!showSettings)}>⚙️</button>
             {showSettings && (
               <div className="settings-dropdown">
-                <button onClick={() => navigate('/employee/order-history')}>
-                  🕓 View Order History
-                </button>
-                <button
-                  onClick={() => {
-                    localStorage.removeItem('employeeId');
-                    navigate('/');
-                  }}
-                >
-                  🔓 Logout
-                </button>
+                <button onClick={() => navigate('/employee/order-history')}>🕓 View Order History</button>
+                <button onClick={() => {
+                  localStorage.removeItem('employeeId');
+                  navigate('/');
+                }}>🔓 Logout</button>
               </div>
             )}
           </div>
@@ -75,7 +73,7 @@ const EmployeePanel = () => {
           <div className="empty-message">No active orders assigned.</div>
         ) : (
           activeOrders.map((order) => {
-            const allPacked = order.items.every((item) => item.status === 'Packed');
+            const allPacked = order.items.every(item => item.status === 'Packed');
             const reason = declineReasons[order._id]?.trim() || '';
 
             return (
@@ -97,14 +95,12 @@ const EmployeePanel = () => {
                     <tbody>
                       {order.items.map((item, idx) => (
                         <tr key={idx}>
-                          <td>{item.ProductName || 'Unnamed Product'}</td>
-                          <td>{item.quantity || 1}</td>
+                          <td>{item.ProductName}</td>
+                          <td>{item.quantity}</td>
                           <td>
                             <select
                               value={item.status || 'Pending'}
-                              onChange={(e) =>
-                                updateItemStatus(order._id, idx, e.target.value)
-                              }
+                              onChange={(e) => updateItemStatus(order._id, idx, e.target.value)}
                             >
                               <option value="Pending">Pending</option>
                               <option value="Packed">Packed</option>
@@ -119,10 +115,7 @@ const EmployeePanel = () => {
 
                 <div className="order-actions">
                   {allPacked ? (
-                    <button
-                      className="complete-btn"
-                      onClick={() => completeOrder(order._id)}
-                    >
+                    <button className="complete-btn" onClick={() => completeOrder(order._id)}>
                       ✅ Complete Order
                     </button>
                   ) : (
@@ -141,8 +134,7 @@ const EmployeePanel = () => {
                             alert('⚠️ Please enter a reason before declining the order.');
                             return;
                           }
-                          const confirmDecline = window.confirm('Are you sure you want to decline this order?');
-                          if (confirmDecline) {
+                          if (window.confirm('Are you sure you want to decline this order?')) {
                             declineOrder(order._id, reason);
                           }
                         }}

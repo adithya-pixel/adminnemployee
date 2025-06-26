@@ -4,6 +4,7 @@ require('dotenv').config();
 
 const express = require('express');
 const mongoose = require('mongoose');
+const settingsRoutes = require('./routes/settingsRoutes');
 const cors = require('cors');
 const path = require('path');
 
@@ -26,6 +27,7 @@ const deliveryAgentRoutes = require('./routes/deliveryAgentRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const authRoutes = require('./routes/authRoutes');
 const employeeActionRoutes = require('./routes/employeeActionRoutes');
+const settings = require('./models/settings');
 
 // ✅ Use Routes
 app.use('/admin', adminRoutes);
@@ -33,12 +35,14 @@ app.use('/api/employees', employeeRoutes);
 app.use('/api/delivery-agents', deliveryAgentRoutes);
 app.use('/api/admin/orders', orderRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/settings', settingsRoutes);
 app.use('/api/employee', employeeActionRoutes); // ✅ Keep after /api/auth to avoid path conflicts
 
 // ✅ Default health route
 app.get('/', (req, res) => {
   res.json({ message: 'Employee Login API Server Running' });
 });
+app.use('/uploads', express.static('uploads'));
 
 // ✅ Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, {

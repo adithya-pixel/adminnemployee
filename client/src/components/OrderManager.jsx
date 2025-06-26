@@ -12,6 +12,10 @@ const OrderManager = () => {
     assignEmployee,
     assignAgent,
   } = useAdminOrderViewModel();
+const activeOrders = orders.filter(
+  (order) => order.agentStatus?.toLowerCase() !== 'delivered successful'
+);
+
 
   if (loading) return <div className="loading">Loading...</div>;
   if (error) return <div className="error">{error}</div>;
@@ -20,11 +24,11 @@ const OrderManager = () => {
     <div className="order-manager">
       <h2 className="page-title">Admin: Orders</h2>
 
-      {orders.length === 0 ? (
-        <div className="no-orders">No orders found.</div>
+      {activeOrders.length === 0 ? (
+        <div className="no-orders">No active orders found.</div>
       ) : (
         <div className="orders-grid">
-          {orders.map((order) => (
+          {activeOrders.map((order) => (
             <div key={order._id} className="order-card">
               <div className="order-header">
                 <div className="order-id">
@@ -151,7 +155,6 @@ const OrderManager = () => {
                 </div>
               </div>
 
-              {/* Assignment Controls */}
               <div className="assignment-controls">
                 {!order.assignedEmployee && (
                   <div className="assign-section">

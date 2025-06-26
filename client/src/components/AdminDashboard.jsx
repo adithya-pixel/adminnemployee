@@ -10,7 +10,7 @@ const AdminDashboard = () => {
       </div>
       <div className="dashboard-body">
         <div className="sidebar">
-          <Link to="/order-manager" className="sidebar-item">Manage Orders</Link>
+          <Link to="/order-manager" className="sidebar-item">Incoming Request</Link>
           <Link to="/employee-manager" className="sidebar-item">Manage Employee</Link>
           <Link to="/delivery-agent-manager" className="sidebar-item">Manage Delivery Agent</Link>
           <Link to="/view-complaints" className="sidebar-item">View Complaints</Link>
