@@ -1,8 +1,13 @@
 // models/Order.js
+
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: false
+  },
 
   addressId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -61,14 +66,24 @@ const orderSchema = new mongoose.Schema({
   },
   agentStatus: {
     type: String,
-    enum: ['Delivery in-progress', 'Delivered', 'Completed', 'Declined'],
-    default: null
+    enum: [
+      'Waiting for Acceptance',
+      'Ready for Pickup',
+      'Picked Up',
+      'Out for Delivery',
+      'Reached at Destination',
+      'Upload Proof',
+      'Delivered Successful',
+      'Declined'
+    ],
+    default: 'Waiting for Acceptance'
   },
 
   // ✅ ORDER PROGRESS TRACKING
   orderStatus: {
     type: String,
     enum: [
+      'Waiting for Acceptance',
       'Ready for Assembly',
       'Pending',
       'In Packing',
@@ -80,10 +95,11 @@ const orderSchema = new mongoose.Schema({
     ],
     default: 'Ready for Assembly'
   },
+
   declineReason: {
-  type: String,
-  default: ''
-},
+    type: String,
+    default: ''
+  },
 
   // ✅ DELIVERY PROOF
   deliveryProofImage: {
