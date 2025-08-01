@@ -158,20 +158,25 @@ exports.assignDeliveryAgent = async (req, res) => {
 
   try {
     const order = await Order.findById(orderId);
-    if (!order)                 return res.status(404).json({ message: 'Order not found' });
-    if (order.assignedAgent)    return res.status(400).json({ message: 'Agent already assigned to this order' });
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+
+    // ⛔ Allow reassign only if no agent assigned OR status is Declined
+    if (order.assignedAgent && order.agentStatus !== 'Declined') {
+      return res.status(400).json({ message: 'Agent already assigned to this order' });
+    }
 
     const agent = await DeliveryAgent.findById(agentId);
-    if (!agent)                 return res.status(404).json({ message: 'Delivery agent not found' });
-    if (agent.activeDeliveries >= MAX_ACTIVE_DELIVERIES)
-                                return res.status(400).json({ message: 'Agent has max active deliveries' });
+    if (!agent) return res.status(404).json({ message: 'Delivery agent not found' });
+    if (agent.activeDeliveries >= MAX_ACTIVE_DELIVERIES) {
+      return res.status(400).json({ message: 'Agent has max active deliveries' });
+    }
 
     order.assignedAgent = agentId;
-    order.agentStatus   = 'Waiting for Acceptance';
-    order.orderStatus   = 'Waiting for Acceptance';
+    order.agentStatus = 'Waiting for Acceptance';
+    order.orderStatus = 'Waiting for Acceptance';
+    order.declineReason = ''; // Optional: clear previous decline reason
     await order.save();
 
-    // NOTE: we do NOT bump agent.activeDeliveries here – only after accept
     res.json({ message: 'Agent invited, awaiting acceptance', order });
   } catch (err) {
     console.error('❌ assignDeliveryAgent:', err);
