@@ -8,6 +8,8 @@ const ViewComplaints = () => {
   const [filteredComplaints, setFilteredComplaints] = useState([]);
   const [searchDate, setSearchDate] = useState('');
   const [statusQuery, setStatusQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const complaintsPerPage = 5;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -15,7 +17,7 @@ const ViewComplaints = () => {
       .then(res => {
         const sorted = res.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
         setComplaints(sorted);
-        setFilteredComplaints(sorted.slice(0, 5)); // show latest 5 by default
+        setFilteredComplaints(sorted);
       })
       .catch(err => console.error('Error:', err));
   }, []);
@@ -48,11 +50,8 @@ const ViewComplaints = () => {
       );
     }
 
-    if (!date && !statusSearch) {
-      filtered = complaints.slice(0, 5); // fallback to latest 5 if no search
-    }
-
     setFilteredComplaints(filtered);
+    setCurrentPage(1); // Reset to first page after filtering
   };
 
   const handleDateChange = (e) => {
@@ -70,15 +69,29 @@ const ViewComplaints = () => {
   const handleClear = () => {
     setSearchDate('');
     setStatusQuery('');
-    setFilteredComplaints(complaints.slice(0, 5)); // reset to latest 5
+    setFilteredComplaints(complaints);
+    setCurrentPage(1);
+  };
+
+  // Pagination logic
+  const indexOfLast = currentPage * complaintsPerPage;
+  const indexOfFirst = indexOfLast - complaintsPerPage;
+  const currentComplaints = filteredComplaints.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(filteredComplaints.length / complaintsPerPage);
+
+  const handleNext = () => {
+    if (currentPage < totalPages) setCurrentPage(prev => prev + 1);
+  };
+
+  const handlePrev = () => {
+    if (currentPage > 1) setCurrentPage(prev => prev - 1);
   };
 
   return (
     <div className="complaints-page">
       <button onClick={() => navigate('/admin-dashboard')} className="home-button" title="Go to Dashboard">
-  Back to Dashboard
-</button>
-
+        Back to Dashboard
+      </button>
 
       <div className="complaints-container">
         <h2 className="complaints-title">Complaints Management</h2>
@@ -100,27 +113,49 @@ const ViewComplaints = () => {
           <button onClick={handleClear} className="clear-button">Clear</button>
         </div>
 
-        {filteredComplaints.length === 0 ? (
+        {currentComplaints.length === 0 ? (
           <p className="no-complaints">No complaints found.</p>
         ) : (
-          <div className="complaints-list">
-            {filteredComplaints.map((c) => (
-              <div
-                key={c._id}
-                className="complaint-card"
-                onClick={() => navigate(`/view-complaints/${c._id}`)}
+          <>
+            <div className="complaints-list">
+              {currentComplaints.map((c) => (
+                <div
+                  key={c._id}
+                  className="complaint-card"
+                  onClick={() => navigate(`/view-complaints/${c._id}`)}
+                >
+                  <p><strong>User ID:</strong> {c.user_id?._id || 'Unknown'}</p>
+                  <p><strong>Date:</strong> {new Date(c.created_at).toLocaleString()}</p>
+                  <p>
+                    <strong>Status:</strong>{' '}
+                    <span className={getStatusClass(c.status)}>
+                      {formatStatus(c.status)}
+                    </span>
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <div className="pagination-controls">
+              <button
+                className="pagination-button"
+                onClick={handlePrev}
+                disabled={currentPage === 1}
               >
-                <p><strong>User ID:</strong> {c.user_id?._id || 'Unknown'}</p>
-                <p><strong>Date:</strong> {new Date(c.created_at).toLocaleString()}</p>
-                <p>
-                  <strong>Status:</strong>{' '}
-                  <span className={getStatusClass(c.status)}>
-                    {formatStatus(c.status)}
-                  </span>
-                </p>
-              </div>
-            ))}
-          </div>
+                Previous
+              </button>
+              <span className="page-info">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                className="pagination-button"
+                onClick={handleNext}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </button>
+            </div>
+          </>
         )}
       </div>
     </div>

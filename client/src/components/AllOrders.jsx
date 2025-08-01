@@ -35,7 +35,6 @@ const AllOrders = () => {
     return deliveredDate === searchDate;
   });
 
-  // 🔢 Pagination Calculations
   const indexOfLastOrder = currentPage * ordersPerPage;
   const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
   const currentOrders = filteredOrders.slice(indexOfFirstOrder, indexOfLastOrder);
@@ -43,7 +42,7 @@ const AllOrders = () => {
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
-    window.scrollTo(0, 0); // optional scroll to top
+    window.scrollTo(0, 0);
   };
 
   const handleNext = () => {
@@ -57,7 +56,6 @@ const AllOrders = () => {
   return (
     <div className="page">
       <div className="orders-container">
-        {/* 🏠 Back to Dashboard */}
         <button className="back-btn" onClick={() => navigate('/admin-dashboard')}>
           <FaHome style={{ marginRight: '8px' }} />
           Back to Dashboard
@@ -65,14 +63,13 @@ const AllOrders = () => {
 
         <h2>Delivered Orders</h2>
 
-        {/* 📅 Date Filter */}
         <div className="date-filter-container">
           <input
             type="date"
             value={searchDate}
             onChange={(e) => {
               setSearchDate(e.target.value);
-              setCurrentPage(1); // reset to page 1 on date change
+              setCurrentPage(1);
             }}
             className="order-search-input"
           />
@@ -101,20 +98,24 @@ const AllOrders = () => {
           )}
         </div>
 
-        {/* 🔁 Pagination Controls */}
-        {filteredOrders.length > ordersPerPage && (
+        {/* Pagination Controls */}
+        {filteredOrders.length > 0 && (
           <div className="pagination">
-            <button disabled={currentPage === 1} onClick={handlePrev}>Prev</button>
-            {[...Array(totalPages)].map((_, i) => (
-              <button
-                key={i + 1}
-                className={currentPage === i + 1 ? 'active' : ''}
-                onClick={() => handlePageChange(i + 1)}
-              >
-                {i + 1}
-              </button>
-            ))}
-            <button disabled={currentPage === totalPages} onClick={handleNext}>Next</button>
+            <button onClick={handlePrev} disabled={currentPage === 1}>Prev</button>
+
+            {totalPages > 1 && (
+              [...Array(totalPages)].map((_, i) => (
+                <button
+                  key={i + 1}
+                  className={currentPage === i + 1 ? 'active' : ''}
+                  onClick={() => handlePageChange(i + 1)}
+                >
+                  {i + 1}
+                </button>
+              ))
+            )}
+
+            <button onClick={handleNext} disabled={currentPage === totalPages}>Next</button>
           </div>
         )}
       </div>
