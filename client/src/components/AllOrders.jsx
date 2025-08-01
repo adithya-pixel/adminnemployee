@@ -7,6 +7,9 @@ import '../styles/AllOrders.css';
 const AllOrders = () => {
   const [orders, setOrders] = useState([]);
   const [searchDate, setSearchDate] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const ordersPerPage = 5;
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -32,50 +35,89 @@ const AllOrders = () => {
     return deliveredDate === searchDate;
   });
 
+  // 🔢 Pagination Calculations
+  const indexOfLastOrder = currentPage * ordersPerPage;
+  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
+  const currentOrders = filteredOrders.slice(indexOfFirstOrder, indexOfLastOrder);
+  const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo(0, 0); // optional scroll to top
+  };
+
+  const handleNext = () => {
+    if (currentPage < totalPages) setCurrentPage(prev => prev + 1);
+  };
+
+  const handlePrev = () => {
+    if (currentPage > 1) setCurrentPage(prev => prev - 1);
+  };
+
   return (
     <div className="page">
-    <div className="orders-container">
-      {/* 🏠 Back to Dashboard */}
-      <button className="back-btn" onClick={() => navigate('/admin-dashboard')}>
-        <FaHome style={{ marginRight: '8px' }} />
-        Back to Dashboard
-      </button>
+      <div className="orders-container">
+        {/* 🏠 Back to Dashboard */}
+        <button className="back-btn" onClick={() => navigate('/admin-dashboard')}>
+          <FaHome style={{ marginRight: '8px' }} />
+          Back to Dashboard
+        </button>
 
-      <h2>Delivered Orders</h2>
+        <h2>Delivered Orders</h2>
 
-      {/* 📅 Date Filter + Clear Button */}
-      <div className="date-filter-container">
-        <input
-          type="date"
-          value={searchDate}
-          onChange={(e) => setSearchDate(e.target.value)}
-          className="order-search-input"
-        />
-        {searchDate && (
-          <button className="clear-btn" onClick={() => setSearchDate('')}>
-            Clear
-          </button>
+        {/* 📅 Date Filter */}
+        <div className="date-filter-container">
+          <input
+            type="date"
+            value={searchDate}
+            onChange={(e) => {
+              setSearchDate(e.target.value);
+              setCurrentPage(1); // reset to page 1 on date change
+            }}
+            className="order-search-input"
+          />
+          {searchDate && (
+            <button className="clear-btn" onClick={() => setSearchDate('')}>
+              Clear
+            </button>
+          )}
+        </div>
+
+        <div className="orders-list">
+          {currentOrders.length > 0 ? (
+            currentOrders.map(order => (
+              <div
+                key={order._id}
+                className="order-card"
+                onClick={() => navigate(`/order/${order._id}`)}
+              >
+                <p><strong>Order ID:</strong> {order._id}</p>
+                <p><strong>Date:</strong> {formatDate(order.deliveredAt)}</p>
+                <p><strong>Status:</strong> {order.orderStatus}</p>
+              </div>
+            ))
+          ) : (
+            <p>No "Delivered Successful" orders found for this date.</p>
+          )}
+        </div>
+
+        {/* 🔁 Pagination Controls */}
+        {filteredOrders.length > ordersPerPage && (
+          <div className="pagination">
+            <button disabled={currentPage === 1} onClick={handlePrev}>Prev</button>
+            {[...Array(totalPages)].map((_, i) => (
+              <button
+                key={i + 1}
+                className={currentPage === i + 1 ? 'active' : ''}
+                onClick={() => handlePageChange(i + 1)}
+              >
+                {i + 1}
+              </button>
+            ))}
+            <button disabled={currentPage === totalPages} onClick={handleNext}>Next</button>
+          </div>
         )}
       </div>
-
-      <div className="orders-list">
-        {filteredOrders.length > 0 ? (
-          filteredOrders.map(order => (
-            <div
-              key={order._id}
-              className="order-card"
-              onClick={() => navigate(`/order/${order._id}`)}
-            >
-              <p><strong>Order ID:</strong> {order._id}</p>
-              <p><strong>Date:</strong> {formatDate(order.deliveredAt)}</p>
-              <p><strong>Status:</strong> {order.orderStatus}</p>
-            </div>
-          ))
-        ) : (
-          <p>No "Delivered Successful" orders found for this date.</p>
-        )}
-      </div>
-    </div>
     </div>
   );
 };
