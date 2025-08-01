@@ -79,18 +79,19 @@ const OrderDetails = () => {
       </div>
 
       {/* Full-width delivery proof below grid */}
-      <div className="info-card">
-        <h3><FaImage /> Delivery Proof</h3>
-        {order.deliveryProofImage ? (
-          <img
-            src={`http://localhost:5000/uploads/${encodeURIComponent(order.deliveryProofImage)}`}
-            alt="Delivery Proof"
-            className="proof-image"
-          />
-        ) : (
-          <p className="no-proof">No proof uploaded</p>
-        )}
-      </div>
+   <div className="info-card">
+  <h3><FaImage /> Delivery Proof</h3>
+  {order.deliveryProofImage ? (
+    <img
+      src={order.deliveryProofImage}
+      alt="Delivery Proof"
+      className="proof-image"
+    />
+  ) : (
+    <p className="no-proof">No proof uploaded</p>
+  )}
+</div>
+
     </div>
     </div>
   );
