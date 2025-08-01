@@ -23,7 +23,7 @@ const useStoreViewModel = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const saveChanges = async (fieldToUpdate = null) => {
@@ -56,7 +56,7 @@ const useStoreViewModel = () => {
     loading,
     handleChange,
     saveChanges,
-    uploadStoreLogo
+    uploadStoreLogo,
   };
 };
 

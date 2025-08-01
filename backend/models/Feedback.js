@@ -1,3 +1,4 @@
+
 const mongoose = require('mongoose');
 
 const feedbackSchema = new mongoose.Schema({
@@ -9,6 +10,11 @@ const feedbackSchema = new mongoose.Schema({
   complaints: {
     type: String,
     required: true
+  },
+  status: {
+    type: String,
+    enum: ['Pending', 'In Review', 'Resolved', 'Rejected'],
+    default: 'Pending'
   },
   created_at: {
     type: Date,

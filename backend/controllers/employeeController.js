@@ -8,7 +8,7 @@ const formatEmpId = (num) => {
   return 'EMP' + String(num).padStart(3, '0');
 };
 
-// ✅ Get all employees
+//  Get all employees
 const getEmployees = async (req, res) => {
   try {
     const employees = await Employee.find();
@@ -18,7 +18,7 @@ const getEmployees = async (req, res) => {
   }
 };
 
-// ✅ Add employee
+//  Add employee
 const addEmployee = async (req, res) => {
   try {
     const { name, address, phoneNumber, password } = req.body;
@@ -47,7 +47,7 @@ const addEmployee = async (req, res) => {
   }
 };
 
-// ✅ Update employee
+//  Update employee
 const updateEmployee = async (req, res) => {
   try {
     const { id } = req.params;
@@ -69,7 +69,7 @@ const updateEmployee = async (req, res) => {
   }
 };
 
-// ✅ Delete employee
+//  Delete employee
 const deleteEmployee = async (req, res) => {
   try {
     await Employee.findByIdAndDelete(req.params.id);
@@ -79,7 +79,7 @@ const deleteEmployee = async (req, res) => {
   }
 };
 
-// ✅ Export all functions
+//  Export all functions
 module.exports = {
   getEmployees,
   addEmployee,

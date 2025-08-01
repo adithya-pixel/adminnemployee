@@ -1,33 +1,42 @@
-// backend/routes/settingsRoutes.js
 const express = require('express');
-const multer = require('multer');
-const path = require('path');
-const Settings = require('../models/settings');
-
 const router = express.Router();
+const multer = require('multer');
+const Settings = require('../models/settings');
+const cloudinary = require('../utils/cloudinary');
 
-// multer storage setup
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, 'uploads/'),
-  filename: (req, file, cb) =>
-    cb(null, 'logo-' + Date.now() + path.extname(file.originalname))
-});
-
+const storage = multer.memoryStorage(); //  Use memoryStorage for direct buffer upload
 const upload = multer({ storage });
 
-// ✅ Upload logo route
 router.post('/upload-logo/:id', upload.single('logo'), async (req, res) => {
   try {
-    const logoUrl = `/uploads/${req.file.filename}`;
-    const updated = await Settings.findByIdAndUpdate(
-      req.params.id,
-      { logoUrl },
-      { new: true }
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    //  Upload to Cloudinary
+    const result = await cloudinary.uploader.upload_stream(
+      { folder: 'logos' },
+      async (error, result) => {
+        if (error) {
+          console.error('Cloudinary upload error:', error);
+          return res.status(500).json({ error: 'Cloudinary upload failed' });
+        }
+
+        // Save logo URL in DB
+        const updated = await Settings.findByIdAndUpdate(
+          req.params.id,
+          { logoUrl: result.secure_url },
+          { new: true }
+        );
+
+        res.json(updated);
+      }
     );
-    res.json(updated);
-  } catch (error) {
-    console.error('❌ Upload failed:', error);
-    res.status(500).json({ error: 'Logo upload failed' });
+
+    result.end(req.file.buffer); // Send file buffer to Cloudinary stream
+  } catch (err) {
+    console.error('Upload failed:', err);
+    res.status(500).json({ error: 'Upload failed' });
   }
 });
 

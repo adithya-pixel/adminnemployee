@@ -113,14 +113,14 @@ const declineOrder = async (req, res) => {
 
     const employeeId = order.assignedEmployee;
 
-    // 🧽 Clear employee assignment
+    //  Clear employee assignment
     order.assignedEmployee = null;
     order.employeeStatus = 'Declined';
     order.orderStatus = 'Declined by Employee';
-    order.declineReason = reason || ''; // ✅ ✅ ✅ You were missing this line!
+    order.declineReason = reason || ''; 
     await order.save();
 
-    // 📦 Recalculate active orders
+    // Recalculate active orders
     const employee = await Employee.findById(employeeId);
     if (employee && employee.activeOrders > 0) {
       employee.activeOrders -= 1;

@@ -1,0 +1,129 @@
+.pagebody {
+  background-color: #e5f5f9;
+  min-height: 100vh; /* ensures full screen background */
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.order-details {
+  padding: 24px 32px;
+  max-width: 1000px;
+  width: 100%;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  color: #1f2937;
+  background: whitesmoke;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 8px;
+}
+
+.order-header h2 {
+  font-size: 22px;
+  color: #0d0d0e;
+  margin: 0;
+}
+
+.back-button {
+  background-color: #2a7b9b; /* Solid professional blue */
+  color: #ffffff;
+  border: none;
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.back-button:hover {
+  background-color: #256b87; /* Slightly darker on hover */
+}
+
+
+/* === Horizontal Grid Layout === */
+.order-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.info-card {
+  background: #f9fafb;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s ease;
+}
+.info-card:hover {
+  transform: translateY(-2px);
+}
+
+.info-card h3 {
+  font-size: 16px;
+  color: #334155;
+  margin-bottom: 8px;
+}
+
+.info-card p {
+  font-size: 14px;
+  margin: 3px 0;
+  color: #475569;
+  line-height: 1.4;
+}
+
+.status-tag {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 10px;
+  font-weight: 600;
+  text-transform: capitalize;
+  color: white;
+}
+
+.status-tag.paid {
+  background-color: #16a34a;
+}
+.status-tag.unpaid {
+  background-color: #dc2626;
+}
+.status-tag.delivered {
+  background-color: #22c55e;
+}
+.status-tag.pending {
+  background-color: #f59e0b;
+}
+.status-tag.in-progress {
+  background-color: #0ea5e9;
+}
+
+.proof-image {
+  margin-top: 10px;
+  max-width: 100%;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+.no-proof {
+  font-style: italic;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.loading-text {
+  text-align: center;
+  font-size: 16px;
+  color: #475569;
+  padding-top: 40px;
+}

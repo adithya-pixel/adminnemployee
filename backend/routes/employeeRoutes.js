@@ -3,7 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const employeeController = require('../controllers/employeeController');
 
-// 📦 File upload setup for ID proof
+//  File upload setup for ID proof
 const storage = multer.diskStorage({
   destination: 'uploads/',
   filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname),

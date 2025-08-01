@@ -1,0 +1,90 @@
+.complaint-page-wrapper {
+  background-color:#e5f5f9; /* Light clean background */
+  min-height: 100vh;
+  padding: 40px 0;
+}
+
+.complaint-detail-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+.back-button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.back-button:hover {
+  background-color: #45a049;
+}
+
+.complaint-info p {
+  margin: 0.8rem 0;
+  line-height: 1.5;
+  font-size: 15px;
+  background: #f7f7f7;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+h2 {
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: #222;
+}
+
+.status-section {
+  margin-top: 2rem;
+}
+
+.status-section h4 {
+  margin-bottom: 1rem;
+  color: #444;
+  font-weight: 600;
+}
+
+.status-steps-container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.status-step {
+  flex: 1 1 30%;
+  padding: 10px;
+  text-align: center;
+  background-color: #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  font-weight: 500;
+}
+
+.status-step:hover {
+  background-color: #d5d5d5;
+}
+
+.status-step.active {
+  background-color: #4CAF50;
+  color: white;
+  font-weight: bold;
+}
+
+.loading-message {
+  text-align: center;
+  margin-top: 4rem;
+  color: #888;
+}

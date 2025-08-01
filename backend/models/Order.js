@@ -17,11 +17,11 @@ const orderSchema = new mongoose.Schema({
 
   items: [
     {
-      Barcode: String,
-      ProductName: String,
-      Price: Number,
-      quantity: Number,
-      image: String,
+      Barcode: { type: String },
+      ProductName: { type: String },
+      Price: { type: Number, default: 0 },
+      quantity: { type: Number, default: 1 }, // ✅ default quantity
+      image: { type: String },
       status: {
         type: String,
         enum: ['Pending', 'Picked', 'Packed', 'Out of Stock'],
@@ -30,11 +30,11 @@ const orderSchema = new mongoose.Schema({
     }
   ],
 
-  totalPrice: Number,
-  gst: Number,
-  grandTotal: Number,
+  totalPrice: { type: Number, default: 0 },
+  gst: { type: Number, default: 0 },
+  grandTotal: { type: Number, default: 0 },
 
-  paymentId: String,
+  paymentId: { type: String, default: null },
   paymentStatus: {
     type: String,
     enum: ['Pending', 'Paid', 'Failed'],
@@ -96,20 +96,11 @@ const orderSchema = new mongoose.Schema({
     default: 'Ready for Assembly'
   },
 
-  declineReason: {
-    type: String,
-    default: ''
-  },
+  declineReason: { type: String, default: '' },
 
   // ✅ DELIVERY PROOF
-  deliveryProofImage: {
-    type: String,
-    default: null
-  },
-  customerConfirmationNote: {
-    type: String,
-    default: null
-  }
+  deliveryProofImage: { type: String, default: null },
+  customerConfirmationNote: { type: String, default: null }
 });
 
 module.exports = mongoose.model('Order', orderSchema);

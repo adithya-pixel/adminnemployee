@@ -1,22 +1,18 @@
 // controllers/orderController.js
-// -------------------------------------------------------
-//  Supermarket Instant‑Delivery ‑ Order / Assignment logic
-// -------------------------------------------------------
+
 
 const Order         = require('../models/Order');
 const Employee      = require('../models/Employee');
 const DeliveryAgent = require('../models/DeliveryAgent');
 
-// ─────────────────────────────────────────────────────────
-//  TUNABLE LIMITS
-// ─────────────────────────────────────────────────────────
-const MAX_ACTIVE_ORDERS      = 5; // per employee
-const MAX_ACTIVE_DELIVERIES  = 5; // per agent
+
+const MAX_ACTIVE_ORDERS      = 5; 
+const MAX_ACTIVE_DELIVERIES  = 5; 
 
 // ─────────────────────────────────────────────────────────
 //  GETTERS
 // ─────────────────────────────────────────────────────────
-/** 📦 List *all* orders (populated) */
+/**  List *all* orders (populated) */
 exports.getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find()
@@ -31,7 +27,7 @@ exports.getAllOrders = async (req, res) => {
   }
 };
 
-/** 🧑‍💼 Employees with room for more active orders */
+/**  Employees with room for more active orders */
 exports.getAvailableEmployees = async (_req, res) => {
   try {
     const employees = await Employee.find({
@@ -45,7 +41,7 @@ exports.getAvailableEmployees = async (_req, res) => {
   }
 };
 
-/** 🚴 Agents with room for more active deliveries */
+/** Agents with room for more active deliveries */
 exports.getAvailableAgents = async (_req, res) => {
   try {
     const agents = await DeliveryAgent.find({
@@ -62,7 +58,7 @@ exports.getAvailableAgents = async (_req, res) => {
 // ─────────────────────────────────────────────────────────
 //  EMPLOYEE FLOW
 // ─────────────────────────────────────────────────────────
-/** 🧑‍💼 Assign an employee to pick / assemble an order */
+/** Assign an employee to pick / assemble an order */
 exports.assignEmployee = async (req, res) => {
   const { orderId, employeeId } = req.body;
 
@@ -91,7 +87,7 @@ exports.assignEmployee = async (req, res) => {
   }
 };
 
-/** ✅ Employee finishes picking items */
+/**  Employee finishes picking items */
 exports.markOrderCompletedByEmployee = async (req, res) => {
   const { orderId } = req.body;
 
@@ -121,7 +117,7 @@ exports.markOrderCompletedByEmployee = async (req, res) => {
   }
 };
 
-/** 🙅 Employee declines the order */
+/**  Employee declines the order */
 exports.declineOrderByEmployee = async (req, res) => {
   const { orderId, reason = '' } = req.body;
 
@@ -156,7 +152,7 @@ exports.declineOrderByEmployee = async (req, res) => {
 // ─────────────────────────────────────────────────────────
 //  AGENT FLOW
 // ─────────────────────────────────────────────────────────
-/** 🚴 Tentatively assign an agent (awaits their acceptance) */
+/** Tentatively assign an agent (awaits their acceptance) */
 exports.assignDeliveryAgent = async (req, res) => {
   const { orderId, agentId } = req.body;
 
@@ -183,7 +179,7 @@ exports.assignDeliveryAgent = async (req, res) => {
   }
 };
 
-/** 👍 Agent accepts the delivery invitation */
+/**  Agent accepts the delivery invitation */
 exports.agentAcceptOrder = async (req, res) => {
   const { orderId, agentId } = req.body;
 
@@ -214,7 +210,7 @@ exports.agentAcceptOrder = async (req, res) => {
   }
 };
 
-/** 🙅 Agent declines the invitation */
+/** Agent declines the invitation */
 exports.agentDeclineOrder = async (req, res) => {
   const { orderId, agentId, reason = '' } = req.body;
 
@@ -238,7 +234,7 @@ exports.agentDeclineOrder = async (req, res) => {
   }
 };
 
-/** 🏁 Agent finishes the delivery */
+/**  Agent finishes the delivery */
 exports.markOrderDeliveredByAgent = async (req, res) => {
   const { orderId, agentId } = req.body;
 
@@ -269,7 +265,7 @@ exports.markOrderDeliveredByAgent = async (req, res) => {
 // ─────────────────────────────────────────────────────────
 //  ITEM‑LEVEL STATUS
 // ─────────────────────────────────────────────────────────
-/** 📝 Update the status of a single item inside an order */
+/**  Update the status of a single item inside an order */
 exports.updateItemStatus = async (req, res) => {
   const { orderId, itemIndex, status } = req.body;
 
@@ -286,6 +282,27 @@ exports.updateItemStatus = async (req, res) => {
     res.json({ message: 'Item status updated', order });
   } catch (err) {
     console.error('❌ updateItemStatus:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+// ✅ Get a single order by ID
+exports.getOrderById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const order = await Order.findById(id)
+    .populate('user', 'name phone_no')
+      .populate('addressId')
+      .populate('assignedEmployee', 'name empId')
+      .populate('assignedAgent', 'name agentId');
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    res.json(order);
+  } catch (err) {
+    console.error('❌ getOrderById error:', err);
     res.status(500).json({ message: 'Server error' });
   }
 };

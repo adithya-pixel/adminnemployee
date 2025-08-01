@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { FaHome, FaStore, FaMapMarkerAlt, FaClock, FaGlobe, FaEdit, FaSave } from 'react-icons/fa';
+import {
+  FaHome,
+  FaStore,
+  FaMapMarkerAlt,
+  FaClock,
+  FaGlobe,
+  FaEdit,
+  FaSave,
+} from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Settings.css';
 import useStoreViewModel from '../viewmodels/useSettingsViewModel';
@@ -11,7 +19,7 @@ const Settings = () => {
     loading,
     handleChange,
     saveChanges,
-    uploadStoreLogo
+    uploadStoreLogo,
   } = useStoreViewModel();
 
   const navigate = useNavigate();
@@ -24,8 +32,14 @@ const Settings = () => {
     ['workingHours', 'Working Hours', <FaClock />],
     ['latitude', 'Latitude', <FaGlobe />],
     ['longitude', 'Longitude', <FaGlobe />],
-    ['deliveryRadius', 'Delivery Radius (km)', <FaGlobe />]
+    ['deliveryRadius', 'Delivery Radius (km)', <FaGlobe />],
   ];
+
+  const getFullLogoUrl = (url) => {
+    if (!url) return '';
+    if (url.startsWith('http')) return url;
+    return `http://localhost:5000${url}`;
+  };
 
   if (loading || !storeData) {
     return (
@@ -37,14 +51,12 @@ const Settings = () => {
 
   return (
     <div className="settings-full-page">
-      
       {/* 🏠 Home Button at Page Top */}
-     <div className="top-home-icon">
-  <button className="icon-btn" onClick={() => navigate('/admin-dashboard')}>
-    <FaHome />
-  </button>
-</div>
-
+      <div className="top-home-icon">
+        <button className="icon-btn" onClick={() => navigate('/admin-dashboard')}>
+          <FaHome />
+        </button>
+      </div>
 
       <div className="settings-page-wrapper">
         <div className="settings-card">
@@ -56,7 +68,7 @@ const Settings = () => {
             {storeData.logoUrl && (
               <div className="logo-preview">
                 <img
-                  src={`http://localhost:5000${storeData.logoUrl}`}
+                  src={getFullLogoUrl(storeData.logoUrl)}
                   alt="Store Logo"
                   width="120"
                 />
@@ -66,7 +78,7 @@ const Settings = () => {
               <input
                 type="file"
                 accept="image/*"
-                onChange={e => {
+                onChange={(e) => {
                   const file = e.target.files[0];
                   if (file) {
                     uploadStoreLogo(file);
@@ -87,7 +99,9 @@ const Settings = () => {
           {/* Editable Fields */}
           {fields.map(([field, label, icon]) => (
             <div key={field} className="form-group">
-              <label htmlFor={field}>{icon} {label}</label>
+              <label htmlFor={field}>
+                {icon} {label}
+              </label>
               {editingField === field ? (
                 <>
                   <input
@@ -108,13 +122,15 @@ const Settings = () => {
                   </button>
                 </>
               ) : (
-               <div className="static-value">
-  <span>{storeData[field]}</span>
-  <button className="btn edit inline" onClick={() => setEditingField(field)}>
-    <FaEdit /> Edit
-  </button>
-</div>
-
+                <div className="static-value">
+                  <span>{storeData[field]}</span>
+                  <button
+                    className="btn edit inline"
+                    onClick={() => setEditingField(field)}
+                  >
+                    <FaEdit /> Edit
+                  </button>
+                </div>
               )}
             </div>
           ))}

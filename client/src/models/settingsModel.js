@@ -12,17 +12,20 @@ export const updateStoreData = async (id, data) => {
   const response = await axios.put(`${API_BASE}/update-store/${id}`, data);
   return response.data;
 };
-// Upload logo function
+
 export const uploadLogo = async (id, file) => {
   const formData = new FormData();
   formData.append('logo', file);
 
-  const res = await fetch(`http://localhost:5000/api/settings/upload-logo/${id}`, {
-    method: 'POST',
-    body: formData
-  });
+  const res = await axios.post(
+    `http://localhost:5000/api/settings/upload-logo/${id}`,
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
+  );
 
-  if (!res.ok) throw new Error('Upload failed');
-  return res.json();
+  return res.data;
 };
-

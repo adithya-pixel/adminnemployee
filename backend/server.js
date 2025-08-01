@@ -42,7 +42,7 @@ app.use('/api/employee', employeeActionRoutes); // ✅ Keep after /api/auth to a
 app.get('/', (req, res) => {
   res.json({ message: 'Employee Login API Server Running' });
 });
-app.use('/uploads', express.static('uploads'));
+
 
 // ✅ Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, {

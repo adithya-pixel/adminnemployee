@@ -10,12 +10,15 @@ import EmployeeOrderHistory from './components/EmployeeOrderHistory';
 // Admin components
 import AdminDashboard from './components/AdminDashboard';
 import ViewComplaints from './components/ViewComplaints';
+import ComplaintDetail from './components/ComplaintDetail';
 import DeliveryAgentManager from './components/DeliveryAgentManager';
 import EmployeeManager from './components/EmployeeManager';
 import EmployeeList from './components/EmployeeList';
 import OrderManager from './components/OrderManager';
 import Settings from './components/Settings';
 import DeliveryAgentList from './components/DeliveryAgentList';
+import OrderDetails from './components/OrderDetails';
+import AllOrders from './components/AllOrders';
 const App = () => {
   const employeeId = localStorage.getItem('employeeId');
   const adminToken = localStorage.getItem('token'); // ✅ Use this to check admin login
@@ -35,6 +38,7 @@ const App = () => {
           path="/view-complaints"
           element={adminToken ? <ViewComplaints /> : <Navigate to="/" />}
         />
+        <Route path="/view-complaints/:id" element={adminToken ? <ComplaintDetail /> : <Navigate to="/" />} />
         <Route
           path="/delivery-agent-manager"
           element={adminToken ? <DeliveryAgentManager /> : <Navigate to="/" />}
@@ -70,6 +74,8 @@ const App = () => {
 
         {/* Fallback Route */}
         <Route path="*" element={<Navigate to="/" />} />
+         <Route path="/order" element={adminToken ? <AllOrders /> : <Navigate to="/" />} />
+        <Route path="/order/:id" element={adminToken ? <OrderDetails /> : <Navigate to="/" />} />
       </Routes>
     </Router>
   );

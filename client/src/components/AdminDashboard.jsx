@@ -14,7 +14,7 @@ const AdminDashboard = () => {
           <Link to="/employee-manager" className="sidebar-item">Manage Employee</Link>
           <Link to="/delivery-agent-manager" className="sidebar-item">Manage Delivery Agent</Link>
           <Link to="/view-complaints" className="sidebar-item">View Complaints</Link>
-          <Link to="/order-manager" className="sidebar-item">All Orders</Link> {/* You can change if different */}
+          <Link to="/order" className="sidebar-item">All Orders</Link> {/* You can change if different */}
           <Link to="/settings" className="sidebar-item">Settings</Link>
         </div>
 
